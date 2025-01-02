@@ -3,13 +3,12 @@
 
 import React from 'react'
 
-const Home = () => {
+const CaptainHome = () => {
   return (
-    <div> 
-        <
+    <div>
+      
     </div>
   )
 }
 
-export default Home
-// 3.54
+export default CaptainHome

@@ -1,33 +1,56 @@
 /* eslint-disable no-unused-vars */
 
 import React, { useState } from "react";
-import { Link, UNSAFE_createClientRoutesWithHMRRevalidationOptOut } from "react-router-dom";
+import {
+  Link,
+  useNavigate
+} from "react-router-dom";
+import axios from 'axios'
+import { UserDataContext } from '../context/userContext';
+
 
 const UserSignUp = () => {
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
-    const [userData, setUserData] = useState({})
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userData, setUserData] = useState({});
 
-    const submitHandler = (e) => {
-        e.preventDefault()
+  const navigate = useNavigate()
+  const {user, setUser} = React.useContext(UserDataContext)
 
-        setUserData({
-            fullName: {
-                firstName: firstName, 
-                lastName: lastName
-            },
-            password: password, 
-            email: email
-        })
+  const submitHandler = async (e) => {
+    e.preventDefault();
 
-        setEmail('')
-        setFirstName('')
-        setLastName('')
-        setPassword('')
+    const newUser = {
+      fullname: {
+        firstname: firstName,
+        lastname: lastName,
+      },
+      password: password,
+      email: email,
     }
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser)
+
+    if(response.status === 201){
+      
+      const data = response.data 
+      setUser(data.user)
+
+      localStorage.setItem('token', data.token)
+
+      navigate('/home')
+    }
+
+    setEmail("");
+    setFirstName("");
+    setLastName("");
+    setPassword("");
+  };
+
+  
 
   return (
     <div>
@@ -43,7 +66,9 @@ const UserSignUp = () => {
               submitHandler(e);
             }}
           >
-            <h3 className="text-lg font-medium mb-2">Provide your name below</h3>
+            <h3 className="text-lg font-medium mb-2">
+              Provide your name below
+            </h3>
 
             <div className="flex gap-4 mb-6">
               <input
@@ -52,8 +77,8 @@ const UserSignUp = () => {
                 type="text"
                 placeholder="first name"
                 value={firstName}
-                onChange={(e)=> {
-                    setFirstName(e.target.value)
+                onChange={(e) => {
+                  setFirstName(e.target.value);
                 }}
               />
 
@@ -63,8 +88,8 @@ const UserSignUp = () => {
                 type="text"
                 placeholder="last name"
                 value={lastName}
-                onChange={(e)=> {
-                    setLastName(e.target.value)
+                onChange={(e) => {
+                  setLastName(e.target.value);
                 }}
               />
             </div>
@@ -77,9 +102,9 @@ const UserSignUp = () => {
               type="email"
               placeholder="email@example.com"
               value={email}
-                onChange={(e)=> {
-                    setEmail(e.target.value)
-                }}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
             />
 
             <h3 className="text-lg font-medium mb-2">Enter Password</h3>
@@ -90,13 +115,15 @@ const UserSignUp = () => {
               type="password"
               placeholder="password"
               value={password}
-                onChange={(e)=> {
-                    setPassword(e.target.value)
-                }}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
             />
 
-            <button className="bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-lg">
-              Login
+            <button
+              className="bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2 w-full text-lg placeholder:text-lg "
+            >
+              Create Account 
             </button>
 
             <p className="text-center">
@@ -110,7 +137,9 @@ const UserSignUp = () => {
 
         <div>
           <p className="text-[6px] leading-tight">
-          This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy Policy</span> and <span className='underline'>Terms of Service</span> apply.
+            This site is protected by reCAPTCHA and the{" "}
+            <span className="underline">Google Privacy Policy</span> and{" "}
+            <span className="underline">Terms of Service</span> apply.
           </p>
         </div>
       </div>
